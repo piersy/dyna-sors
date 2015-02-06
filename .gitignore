@@ -1,0 +1,9 @@
+out/
+logs
+*.db
+build/
+.vagrant/
+.gradle/
+*.iml
+.idea/
+identity-extraction/identity-extraction-server/tesseract3.03-rc1_libs/src/extractedSources

@@ -1,0 +1,192 @@
+//Depite these showing in red in intellij, they still work
+import org.apache.tools.ant.filters.ReplaceTokens
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.0.3'
+    }
+}
+
+//When run this will regenerate the gradle wrapper for this project
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
+//Configure basic stuff for projects with java type
+allprojects {
+    plugins.withType(JavaPlugin).whenPluginAdded {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+
+        //Allows deploying to local repo
+        project.plugins.apply('maven-publish')
+
+        publishing.publications {
+            mavenJava(MavenPublication) {
+                project.setVersion(currentVersion)
+
+                groupId 'com.piersyp.dyna-sors'
+                artifactId project.name
+                version project.version
+
+                from components.java
+            }
+        }
+
+        //Repos to use
+        repositories {
+            mavenLocal()
+            mavenCentral()
+        }
+
+        dependencies {
+            testCompile 'org.hamcrest:hamcrest-all:1.3'
+            testCompile "junit:junit:4.11"
+            testCompile 'org.mockito:mockito-core:1.9.5'
+        }
+
+        /*
+       Configure tests to run relative to their module directory, and to output their logs during the build
+       */
+        test {
+            workingDir = project.getProjectDir();
+            testLogging.showStandardStreams = true
+        }
+
+        //Here we define a task that produces a jar with test code
+        tasks.create(name: 'testJar', type: Jar, dependsOn: testClasses) {
+            baseName = "${project.name}-${project.version}-test.jar"
+            from sourceSets.test.output
+        }
+
+        //now we create a configuration called tests, id rather it were called test
+        //but calling it test does not work, i guess it conflicts with some default
+        //config
+        configurations {
+            tests
+        }
+
+        //and bind that configuration to the testJar artifact so that we can
+        //easily depend on test code between projects
+        artifacts {
+            tests testJar
+        }
+
+    }
+}
+
+
+/*
+ Configure the server subprojects
+ */
+configure([project(exampleServer)]) {
+    afterEvaluate {
+        apply plugin: 'java'
+
+        /*
+               Task to perform variable replacement in the dropwizard_config.yml files
+               */
+        project.task('filterDropWizardConfigFile', type: Copy) {
+            from(project.ext.dropWizardConfigFileLocation) {
+                include 'dropwizard_config.yml'
+                include 'dropwizard_config_deployed.yml'
+            }
+            into 'build/'
+            //For some reason gradle does not appreciate use of ext props in the filter method arguments
+            String httpPort = project.ext.httpPort
+            String adminPort = project.ext.adminPort
+            filter(ReplaceTokens, tokens: ['HTTP_PORT': httpPort, 'ADMIN_PORT': adminPort])
+        }
+
+        //Ensures the filter task is run before compile
+        processResources.dependsOn('filterDropWizardConfigFile')
+
+        /*
+        This plugin constructs a fat jar and gives options for shading and merging of manifest info, etc ...
+        */
+        project.plugins.apply('com.github.johnrengelman.shadow')
+        // Configure the shadow jar task
+        shadowJar {
+            baseName = "${project.name}"
+            version ''
+
+            mergeServiceFiles()
+
+            /*The below config attempts to mimic that found in the maven dropwizard
+              config as seen here - http://www.yunspace.com/2014/02/12/dropwizard-gradle-shadowjar
+              But it doesn't work! What does work is the merging of service files (above) whcih is
+              equivalent to the use of the service file transformer. Also after more
+              investigation it seems that the ManifestResourceTransformer is just for
+              modifying the manifest of the generated  jar, yet we have full control
+              over that anyway - see below.
+            */
+
+//    	transform(com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer)
+//   	transform(com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer){
+//       		mainClass = main.DropwizardDemoApplication'
+//   	}
+            //Exclude certificates from any signed jars
+            exclude 'META-INF/*.DSA'
+            exclude 'META-INF/*.RSA'
+            exclude 'META-INF/*.SF'
+        }
+
+        project.plugins.apply('application')
+
+        mainClassName = ext.mainClass
+
+        jar {
+            manifest {
+                attributes 'Main-Class': mainClassName
+                attributes 'Built-By': System.getProperty('user.name')
+                attributes 'Build-Jdk': System.getProperty('java.version')
+                attributes 'Implementation-Title': project.name
+                attributes 'Implementation-Version': project.version
+                attributes 'Implementation-Vendor-Id': project.group
+
+            }
+        }
+
+        run {
+            args 'server', "build/dropwizard_config.yml"
+        }
+
+        runShadow {
+            // jvmOptions {
+            //   minHeapSize = '1g'
+            maxHeapSize = '1g'
+            //   jvmArgs("-XX:MaxPermSize=512m")
+            //  }
+            args 'server', "build/dropwizard_config.yml"
+        }
+
+        //Our dependencies - could probs be pared down as these come form an example
+        dependencies {
+
+            compile "io.dropwizard:dropwizard-core:$dropwizardVersion"
+
+            compile 'commons-io:commons-io:2.4'
+
+            compile 'com.hubspot.dropwizard:dropwizard-guice:0.7.2'
+
+            testCompile "io.dropwizard:dropwizard-testing:$dropwizardVersion"
+            testCompile "ch.qos.logback:logback-classic:${logbackVersion}"
+            testCompile 'org.slf4j:log4j-over-slf4j:1.7.2'
+
+            testRuntime 'org.objenesis:objenesis:1.2'
+
+
+        }
+
+        /*
+        Configures the dependency configurations for all projects, exclude log4j so it doesnot clash with logback
+        */
+        configurations {
+            all*.exclude group: 'log4j', module: 'log4j'
+        }
+    }
+}
+

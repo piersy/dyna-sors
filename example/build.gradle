@@ -1,0 +1,27 @@
+project(exampleCommon){
+    apply plugin: 'java'
+    dependencies{
+        compile "com.sun.jersey:jersey-core:$jerseyVersion"
+    }
+}
+
+project(exampleServer){
+    project.ext {
+        dropWizardConfigFileLocation = "${rootDir}"
+        httpPort = 4080
+        adminPort = 4081
+        mainClass = 'com.piersyp.dynasors.ExampleApplication'
+    }
+
+    apply plugin: 'java'
+
+    dependencies{
+        compile project(exampleCommon)
+    }
+
+}
+
+project(exampleClient){
+    apply plugin: 'java'
+
+}

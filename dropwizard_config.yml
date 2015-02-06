@@ -1,0 +1,31 @@
+server:
+  applicationConnectors:
+  - type: http
+    port: @HTTP_PORT@
+  adminConnectors:
+  - type: http
+    port: @ADMIN_PORT@
+#  This request log seems to be printed out of sync with jersey's more descriptive logging filter so is not particularly useful
+#  We disable it by setting its appenders to be an empty list
+  requestLog:
+    appenders: []
+
+# Logging settings.
+logging:
+  level: INFO
+  appenders:
+      - type: console
+        logFormat: "%-5level [%d{yyyy-dd-mm HH:mm:ss.SSS}] [%thread] %logger - %msg%n"
+      - type: file
+        logFormat: "%-5level [%d{yyyy-dd-mm HH:mm:ss.SSS}] [%thread] %logger - %msg%n"
+        # The file to which current statements will be logged.
+        currentLogFilename: ./build/server.log
+        archive: false
+
+        # The timezone used to format dates. HINT: USE THE DEFAULT, UTC.
+        timeZone: UTC
+  loggers:
+    io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper: DEBUG
+
+
+
