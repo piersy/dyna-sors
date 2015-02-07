@@ -18,6 +18,7 @@ project(exampleServer){
     dependencies{
         compile project(exampleCommon)
         testCompile project(exampleClient)
+        compile 'org.glassfish.jersey.ext:jersey-proxy-client:2.15'
     }
 
 }
