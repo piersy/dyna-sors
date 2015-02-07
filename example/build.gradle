@@ -17,11 +17,16 @@ project(exampleServer){
 
     dependencies{
         compile project(exampleCommon)
+        testCompile project(exampleClient)
     }
 
 }
 
 project(exampleClient){
     apply plugin: 'java'
+    dependencies{
+        compile project(exampleCommon)
+        compile "com.sun.jersey:jersey-client:$jerseyVersion"
+    }
 
 }

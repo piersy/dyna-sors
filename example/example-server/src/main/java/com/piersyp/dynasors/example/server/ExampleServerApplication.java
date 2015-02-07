@@ -27,18 +27,6 @@ public class ExampleServerApplication extends Application<Configuration> {
 
         @Override
         public void initialize(Bootstrap<Configuration> bootstrap) {
-//            this.bootstrap = bootstrap;
-//            final GuiceBundle.Builder<Configuration> guiceBundleBuilder = GuiceBundle.<Configuration>newBuilder();
-//            guiceBundleBuilder.setConfigClass(Configuration.class);
-//            guiceBundleBuilder.addModule(new AbstractModule() {
-//                @Override
-//                protected void configure() {
-//                      bind(ExampleService.class).to(ExampleServiceResource.class).in(Scopes.SINGLETON);
-//                }
-//            });
-//
-//            GuiceBundle<Configuration> guiceBundle = guiceBundleBuilder.build(Stage.PRODUCTION);
-//            bootstrap.addBundle(guiceBundle);
         }
 
         @Override
@@ -63,5 +51,6 @@ public class ExampleServerApplication extends Application<Configuration> {
                 bind(ExampleService.class).to(ExampleServiceResource.class).in(Scopes.SINGLETON);
             }
         });
+
     }
     }
