@@ -13,7 +13,11 @@ import java.util.function.Function;
 
 public class ClientFactory {
     public <T> T buildClient(Class<T> resourceClass, Client client, String hostAddress) {
-        return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[]{resourceClass}, new MyInvocationHandler(client.resource(hostAddress), resourceClass));
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        Class<?>[] interfaces = {resourceClass};
+        WebResource resource = client.resource(hostAddress);
+        MyInvocationHandler invocationHandler = new MyInvocationHandler(resource, resourceClass);
+        return (T) Proxy.newProxyInstance(classLoader, interfaces, invocationHandler);
     }
 
     private static class MyInvocationHandler implements InvocationHandler {
