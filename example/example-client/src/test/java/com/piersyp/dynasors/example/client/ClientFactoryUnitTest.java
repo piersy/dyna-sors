@@ -33,11 +33,6 @@ public class ClientFactoryUnitTest {
     @Mock
     private WebResource subWebResourceMock;
 
-    @Path(ROOT)
-    private static interface BasicGet {
-        @GET
-        String get();
-    }
 
 
 
@@ -53,16 +48,23 @@ public class ClientFactoryUnitTest {
         clientFactory = new ClientFactory();
     }
 
+    @Path(ROOT)
+    private static interface TestResource{
+
+        @GET
+        String get();
+    }
+
     @Test
     public void givenClientConstructedForResourceWithGetMethod_whenClientMethodCalled_thenExpectedValueReturned() throws Exception {
         when(rootWebResourceMock.get(String.class)).thenReturn(RESULT);
-        BasicGet basicGet = clientFactory.buildClient(BasicGet.class, clientMock, HOST);
+        TestResource testResource = clientFactory.buildClient(TestResource.class, clientMock, HOST);
 
-        assertThat(basicGet.get(), equalTo(RESULT));
+        assertThat(testResource.get(), equalTo(RESULT));
     }
 
     @Path(ROOT)
-    private static interface BasicGet1 extends BasicGet {
+    private static interface TestResource1 extends TestResource{
         @Path(PATH)
         @GET
         String get();
@@ -74,9 +76,9 @@ public class ClientFactoryUnitTest {
         when(rootWebResourceMock.path(PATH)).thenReturn(subWebResourceMock);
         when(subWebResourceMock.get(String.class)).thenReturn(RESULT);
 
-        BasicGet basicGet = clientFactory.buildClient(BasicGet1.class, clientMock, HOST);
+        TestResource testResource = clientFactory.buildClient(TestResource1.class, clientMock, HOST);
 
-        assertThat(basicGet.get(), equalTo(RESULT));
+        assertThat(testResource.get(), equalTo(RESULT));
     }
 
 
