@@ -22,6 +22,7 @@ public class ClientFactoryUnitTest {
     public static final String HOST = "HOST";
     public static final String RESULT = "RESULT";
     public static final String ROOT = "/";
+    public static final String PATH = "PATH";
 
     @Mock
     private Client clientMock;
@@ -29,9 +30,18 @@ public class ClientFactoryUnitTest {
     private WebResource hostWebResourceMock;
     @Mock
     private WebResource rootWebResourceMock;
+    @Mock
+    private WebResource subWebResourceMock;
 
     @Path(ROOT)
     private static interface TestResource{
+        @GET
+        String get();
+    }
+
+    @Path(ROOT)
+    private static interface TestResource1 extends TestResource{
+        @Path(PATH)
         @GET
         String get();
     }
@@ -43,17 +53,27 @@ public class ClientFactoryUnitTest {
         when(clientMock.resource(HOST)).thenReturn(hostWebResourceMock);
         when(hostWebResourceMock.path(ROOT)).thenReturn(rootWebResourceMock);
 
-        when(rootWebResourceMock.get(String.class)).thenReturn(RESULT);
+
 
         clientFactory = new ClientFactory();
     }
 
     @Test
     public void givenClientConstructedForResourceWithGetMethod_whenClientMethodCalled_thenExpectedValueReturned() throws Exception {
+        when(rootWebResourceMock.get(String.class)).thenReturn(RESULT);
         TestResource testResource = clientFactory.buildClient(TestResource.class, clientMock, HOST);
 
         assertThat(testResource.get(), equalTo(RESULT));
+    }
 
+    @Test
+    public void givenClientConstructedForResourceWithGetMethodHavingSpecificPath_whenClientMethodCalled_thenExpectedValueReturned() throws Exception {
+        when(rootWebResourceMock.path(PATH)).thenReturn(subWebResourceMock);
+        when(subWebResourceMock.get(String.class)).thenReturn(RESULT);
+
+        TestResource testResource = clientFactory.buildClient(TestResource1.class, clientMock, HOST);
+
+        assertThat(testResource.get(), equalTo(RESULT));
     }
 
 

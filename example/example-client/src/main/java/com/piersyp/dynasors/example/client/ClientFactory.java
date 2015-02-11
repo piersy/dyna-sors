@@ -4,6 +4,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -23,21 +24,24 @@ public class ClientFactory {
     private static class MyInvocationHandler implements InvocationHandler {
 
         private final WebResource host;
-        private final Class resourceClass;
         private final String rootPath;
+        private WebResource resource;
 
         private MyInvocationHandler(WebResource host, Class resourceClass) {
             this.host = host;
-            this.resourceClass = resourceClass;
             this.rootPath = ((Path)resourceClass.getAnnotation(Path.class)).value();
+            this.resource = host.path(rootPath);
         }
 
 
         @Override
         public Object invoke(Object proxy, final Method method, Object[] args) throws Throwable {
-            WebResource resource = host.path(rootPath);
+            WebResource webResource = resource;
             Function<WebResource, Object> f = null;
             for (Annotation annotation : method.getAnnotations()) {
+                if(annotation instanceof Path){
+                    webResource = webResource.path(((Path) annotation).value());
+                }
                 if(annotation instanceof GET){
                     f = new Function<WebResource, Object>(){
                         @Override
@@ -48,7 +52,7 @@ public class ClientFactory {
                 }
             }
 
-            return f.apply(resource);
+            return f.apply(webResource);
 
         }
     }
