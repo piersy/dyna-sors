@@ -1,6 +1,8 @@
 package com.piersyp.dynasors.example.server;
 
 import com.piersyp.dynasors.example.client.ClientFactory;
+import com.piersyp.dynasors.example.client.WebResourceBuildingService;
+import com.piersyp.dynasors.example.client.WebResourceTypeService;
 import com.piersyp.dynasors.example.common.ExampleService;
 import com.sun.jersey.api.client.Client;
 import io.dropwizard.Configuration;
@@ -21,7 +23,7 @@ public class ExampleServerAcceptanceTest {
     @Test
     public void whenGetHelloWorldEndpoint_thenExpectedTextReturned() throws Exception {
         //String response = Client.create().resource("http://localhost:"+ACCOUNT_SERVER_RULE.getLocalPort()).path(ExampleService.HELLO_WORLD_ENDPOINT).get(String.class);
-        ExampleService exampleService = new ClientFactory().buildClient(ExampleService.class, Client.create(), "http://localhost:" + ACCOUNT_SERVER_RULE.getLocalPort());
+        ExampleService exampleService = new ClientFactory().buildClient(ExampleService.class, Client.create(), "http://localhost:" + ACCOUNT_SERVER_RULE.getLocalPort(), new WebResourceBuildingService(), new WebResourceTypeService());
 
         assertThat(exampleService.helloWorld(), equalTo(ExampleServiceResource.HELLO_WORLD));
     }

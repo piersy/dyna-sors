@@ -2,7 +2,6 @@ package com.piersyp.dynasors.example.server;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.google.inject.*;
-import com.hubspot.dropwizard.guice.GuiceBundle;
 import com.piersyp.dynasors.example.common.ExampleService;
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;

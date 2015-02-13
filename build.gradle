@@ -170,8 +170,6 @@ configure([project(exampleServer)]) {
 
             compile 'commons-io:commons-io:2.4'
 
-            compile 'com.hubspot.dropwizard:dropwizard-guice:0.7.2'
-
             testCompile "io.dropwizard:dropwizard-testing:$dropwizardVersion"
             testCompile "ch.qos.logback:logback-classic:${logbackVersion}"
             testCompile 'org.slf4j:log4j-over-slf4j:1.7.2'

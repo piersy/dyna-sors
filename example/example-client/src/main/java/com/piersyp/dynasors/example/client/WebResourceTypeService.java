@@ -6,7 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.AnnotatedElement;
 
-public class WebResourceTypingService {
+public class WebResourceTypeService {
     public WebResource.Builder setWebResourceType(WebResource.Builder webResourceBuilder, AnnotatedElement annotatedElement) {
         String[] consumes = ((Consumes) annotatedElement.getAnnotation(Consumes.class)).value();
         if(consumes.length > 1){

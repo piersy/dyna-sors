@@ -13,29 +13,36 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class ClientFactory {
-    public <T> T buildClient(Class<T> resourceClass, Client client, String hostAddress, WebResourceBuildingService webResourceBuildingService) {
+    public <T> T buildClient(Class<T> resourceClass, Client client, String hostAddress, WebResourceBuildingService webResourceBuildingService, WebResourceTypeService webResourceTypeService) {
         ClassLoader classLoader = this.getClass().getClassLoader();
         Class<?>[] interfaces = {resourceClass};
         WebResource resource = client.resource(hostAddress);
-        ClientInvocationHandler invocationHandler = new ClientInvocationHandler(resource, resourceClass, webResourceBuildingService, webResourceTypingService);
+
+
+
+
+        ClientInvocationHandler invocationHandler = new ClientInvocationHandler(resource, resourceClass, webResourceBuildingService, webResourceTypeService, new WebResourceAcceptService());
         return (T) Proxy.newProxyInstance(classLoader, interfaces, invocationHandler);
     }
 
+//    private static class Web
+
     private static class ClientInvocationHandler implements InvocationHandler {
 
+        private WebResource webResource;
         private MediaType consumes;
         private Map<Method, Function<Object[], Object>> methodFunctionMap;
 
         private ClientInvocationHandler(WebResource resource, Class resourceClass, WebResourceBuildingService webResourcePathService,
-                                        WebResourceTypingService webResourceTypeService, WebResourceAcceptService webResourceAcceptService) {
+                                        WebResourceTypeService webResourceTypeService, WebResourceAcceptService webResourceAcceptService) {
             resource = webResourcePathService.appendPath(resource, resourceClass);
+            this.webResource = resource;
             WebResource.Builder webResourceBuilder = resource.type(MediaType.APPLICATION_OCTET_STREAM_TYPE);
             webResourceBuilder = webResourceTypeService.setWebResourceType(webResourceBuilder, resourceClass);
             webResourceBuilder = webResourceAcceptService.addAcceptsTypes(webResourceBuilder, resourceClass);
-
-
-
-
+            /*We can try to handle subresource locators but in the case that
+              there is more than one compatible class that have non matching annotations on them then we will fail.
+             */
 
 
 
@@ -44,7 +51,6 @@ public class ClientFactory {
 
         @Override
         public Object invoke(Object proxy, final Method method, Object[] args) throws Throwable {
-            WebResource webResource = resource;
             Function<WebResource, Object> f = null;
             for (Annotation annotation : method.getAnnotations()) {
                 if(annotation instanceof Path){

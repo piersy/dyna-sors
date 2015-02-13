@@ -2,6 +2,7 @@ project(exampleCommon){
     apply plugin: 'java'
     dependencies{
         compile "com.sun.jersey:jersey-core:$jerseyVersion"
+        compile 'com.google.inject:guice:4.0-beta5:no_aop'
     }
 }
 
@@ -19,6 +20,8 @@ project(exampleServer){
         compile project(exampleCommon)
         testCompile project(exampleClient)
         compile 'org.glassfish.jersey.ext:jersey-proxy-client:2.15'
+
+
     }
 
 }
