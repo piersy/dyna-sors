@@ -13,7 +13,15 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class ClientFactory {
-    public <T> T buildClient(Class<T> resourceClass, Client client, String hostAddress, WebResourceBuildingService webResourceBuildingService, WebResourceTypeService webResourceTypeService) {
+
+    private final ClientFunctionFactory clientFunctionFactory;
+
+    public ClientFactory(ClientFunctionFactory clientFunctionFactory) {
+
+        this.clientFunctionFactory = clientFunctionFactory;
+    }
+
+    public <T> T createClient(Class<T> resourceClass, Client client, String hostAddress) {
         ClassLoader classLoader = this.getClass().getClassLoader();
         Class<?>[] interfaces = {resourceClass};
         WebResource resource = client.resource(hostAddress);
@@ -21,8 +29,7 @@ public class ClientFactory {
 
 
 
-        ClientInvocationHandler invocationHandler = new ClientInvocationHandler(resource, resourceClass, webResourceBuildingService, webResourceTypeService, new WebResourceAcceptService());
-        return (T) Proxy.newProxyInstance(classLoader, interfaces, invocationHandler);
+        return (T) Proxy.newProxyInstance(classLoader, interfaces, null);
     }
 
 //    private static class Web

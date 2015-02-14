@@ -23,7 +23,8 @@ public class ExampleServerAcceptanceTest {
     @Test
     public void whenGetHelloWorldEndpoint_thenExpectedTextReturned() throws Exception {
         //String response = Client.create().resource("http://localhost:"+ACCOUNT_SERVER_RULE.getLocalPort()).path(ExampleService.HELLO_WORLD_ENDPOINT).get(String.class);
-        ExampleService exampleService = new ClientFactory().buildClient(ExampleService.class, Client.create(), "http://localhost:" + ACCOUNT_SERVER_RULE.getLocalPort(), new WebResourceBuildingService(), new WebResourceTypeService());
+        ExampleService exampleService = new ClientFactory(webResourceBuildingService, webResourceTypeService).createClient(ExampleService.class, Client.create(),
+                "http://localhost:" + ACCOUNT_SERVER_RULE.getLocalPort(), new WebResourceBuildingService(), new WebResourceTypeService());
 
         assertThat(exampleService.helloWorld(), equalTo(ExampleServiceResource.HELLO_WORLD));
     }
