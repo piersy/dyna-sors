@@ -9,8 +9,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ClientFactory {
 
@@ -25,11 +27,11 @@ public class ClientFactory {
         ClassLoader classLoader = this.getClass().getClassLoader();
         Class<?>[] interfaces = {resourceClass};
         WebResource resource = client.resource(hostAddress);
+        Map<Method, Function<Object[], Object>> methodFunctionMap = Arrays.asList(resourceClass.getMethods()).stream().collect(
+                Collectors.toMap(m -> m, m -> clientFunctionFactory.createFunction(resourceClass, m)));
 
 
-
-
-        return (T) Proxy.newProxyInstance(classLoader, interfaces, null);
+        return (T) Proxy.newProxyInstance(classLoader, interfaces, new MethodFunctionMapInvocationHandler(methodFunctionMap));
     }
 
 //    private static class Web
@@ -52,7 +54,6 @@ public class ClientFactory {
              */
 
 
-
         }
 
 
@@ -60,11 +61,11 @@ public class ClientFactory {
         public Object invoke(Object proxy, final Method method, Object[] args) throws Throwable {
             Function<WebResource, Object> f = null;
             for (Annotation annotation : method.getAnnotations()) {
-                if(annotation instanceof Path){
+                if (annotation instanceof Path) {
                     webResource = webResource.path(((Path) annotation).value());
                 }
-                if(annotation instanceof GET){
-                    f = new Function<WebResource, Object>(){
+                if (annotation instanceof GET) {
+                    f = new Function<WebResource, Object>() {
                         @Override
                         public Object apply(WebResource webResource) {
                             return webResource.get(method.getReturnType());

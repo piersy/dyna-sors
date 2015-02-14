@@ -113,9 +113,9 @@ public class ClientFactoryUnitTest {
         client.method3();
 
         InOrder inOrder = inOrder(function1Mock, function2Mock, function3Mock);
-        inOrder.verify(function1Mock.apply(null));
-        inOrder.verify(function1Mock.apply(null));
-        inOrder.verify(function1Mock.apply(null));
+        inOrder.verify(function1Mock).apply(null);
+        inOrder.verify(function2Mock).apply(null);
+        inOrder.verify(function3Mock).apply(null);
     }
 
     @Test
