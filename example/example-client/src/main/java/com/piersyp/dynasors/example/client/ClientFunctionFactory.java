@@ -13,20 +13,23 @@ public class ClientFunctionFactory {
 
     private final Client client;
     private final Function<Class<?>, Function<Method, List<Annotation>>> annotationCollectionFunction;
-    private final Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> contentTypeConfigurationFunction;
-    private final Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> acceptsTypeConfigurationFunction;
-    private final Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> cookieConfigurationFunction;
-    private final Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> headerConfigurationFunction;
-    private final Function<Method, Function<WebResource.Builder, Function<Object[], Object>>> httpMethodConfigurationFunction;
+    private final Function<List<Annotation>, WebResource> pathConfigurationFunction;
+    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> contentTypeConfigurationFunction;
+    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> acceptsTypeConfigurationFunction;
+    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> cookieConfigurationFunction;
+    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> headerConfigurationFunction;
+    private final Function<List<Annotation>, Function<WebResource.Builder, Function<Object[], Object>>> httpMethodConfigurationFunction;
 
     public ClientFunctionFactory(Client client, Function<Class<?>, Function<Method, List<Annotation>>> annotationColletionFunction,
-                                 Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> contentTypeConfigurationFunction,
-                                 Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> acceptsTypeConfigurationFunction,
-                                 Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> cookieConfigurationFunction,
-                                 Function<Class<?>, Function<Method, Function<WebResource.Builder, WebResource.Builder>>> headerConfigurationFunction,
-                                 Function<Method, Function<WebResource.Builder, Function<Object[], Object>>> httpMethodConfigurationFunction) {
+                                 Function<List<Annotation>, WebResource> pathConfigurationFunction,
+                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> contentTypeConfigurationFunction,
+                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> acceptsTypeConfigurationFunction,
+                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> cookieConfigurationFunction,
+                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> headerConfigurationFunction,
+                                 Function<List<Annotation>, Function<WebResource.Builder, Function<Object[], Object>>> httpMethodConfigurationFunction) {
         this.client = client;
         this.annotationCollectionFunction = annotationColletionFunction;
+        this.pathConfigurationFunction = pathConfigurationFunction;
         this.contentTypeConfigurationFunction = contentTypeConfigurationFunction;
         this.acceptsTypeConfigurationFunction = acceptsTypeConfigurationFunction;
         this.cookieConfigurationFunction = cookieConfigurationFunction;
@@ -37,16 +40,13 @@ public class ClientFunctionFactory {
 
     Function<Object[], Object> createFunction(Class<?> resourceClass, Method resourceMethod) {
         List<Annotation> annotations = annotationCollectionFunction.apply(resourceClass).apply(resourceMethod);
-//
-////        Client.create().resource("hfhf").type().header().accept().entity().post();
-//        WebResource webResource = annotationCollectionFunction.apply(resourceClass).apply(resourceMethod).apply(client);
-//        WebResource.Builder builder = webResource.type(MediaType.APPLICATION_OCTET_STREAM);
-//        builder = contentTypeConfigurationFunction.apply(resourceClass).apply(resourceMethod).apply(builder);
-//        builder = acceptsTypeConfigurationFunction.apply(resourceClass).apply(resourceMethod).apply(builder);
-//        builder = cookieConfigurationFunction.apply(resourceClass).apply(resourceMethod).apply(builder);
-//        builder = headerConfigurationFunction.apply(resourceClass).apply(resourceMethod).apply(builder);
-//        return httpMethodConfigurationFunction.apply(resourceMethod).apply(builder);
-        return null;
+        WebResource webResource = pathConfigurationFunction.apply(annotations);
+        WebResource.Builder builder = webResource.type(MediaType.APPLICATION_OCTET_STREAM);
+        builder = contentTypeConfigurationFunction.apply(annotations).apply(builder);
+        builder = acceptsTypeConfigurationFunction.apply(annotations).apply(builder);
+        builder = cookieConfigurationFunction.apply(annotations).apply(builder);
+        builder = headerConfigurationFunction.apply(annotations).apply(builder);
+        return httpMethodConfigurationFunction.apply(annotations).apply(builder);
     }
 
     //reference
