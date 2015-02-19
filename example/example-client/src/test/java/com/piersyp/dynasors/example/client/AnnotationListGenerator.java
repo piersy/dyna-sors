@@ -22,11 +22,6 @@ public class AnnotationListGenerator {
         void method();
     }
 
-    public static interface ProducesClass {
-        @Produces
-        void method();
-    }
-
     public static interface ConsumesClass {
         public static String CONTENT_TYPE_VALUE = MediaType.APPLICATION_JSON;
 
@@ -42,6 +37,21 @@ public class AnnotationListGenerator {
         void method();
     }
 
+    public static interface ProducesClass {
+        public static String CONTENT_TYPE_VALUE = MediaType.APPLICATION_JSON;
+
+        @Produces(CONTENT_TYPE_VALUE)
+        void method();
+    }
+
+    public static interface MultiProducesClass {
+        public static String FIRST_CONTENT_TYPE_VALUE = MediaType.APPLICATION_JSON;
+        public static String SECOND_CONTENT_TYPE_VALUE = MediaType.APPLICATION_XML;
+
+        @Produces({FIRST_CONTENT_TYPE_VALUE, SECOND_CONTENT_TYPE_VALUE})
+        void method();
+    }
+
     public static final class AnnotatedClassReference{
         private final Class annotationHoldingClass;
 
@@ -52,10 +62,11 @@ public class AnnotationListGenerator {
 
     //the AnnotatedClassReference stops just anything being shoved inside the generate method
     public static final AnnotatedClassReference PATH_CLASS = new AnnotatedClassReference(PathClass.class);
-    public static final AnnotatedClassReference GET_CLASS = new AnnotatedClassReference(GetClass.class);
-    public static final AnnotatedClassReference PRODUCES_CLASS = new AnnotatedClassReference(ProducesClass.class);
     public static final AnnotatedClassReference CONSUMES_CLASS = new AnnotatedClassReference(ConsumesClass.class);
     public static final AnnotatedClassReference MULTI_CONSUMES_CLASS = new AnnotatedClassReference(MultiConsumesClass.class);
+    public static final AnnotatedClassReference PRODUCES_CLASS = new AnnotatedClassReference(ProducesClass.class);
+    public static final AnnotatedClassReference MULTI_PRODUCES_CLASS = new AnnotatedClassReference(MultiProducesClass.class);
+    public static final AnnotatedClassReference GET_CLASS = new AnnotatedClassReference(GetClass.class);
 
     public List<Annotation> generateList(AnnotatedClassReference annotatedClassReference, int size) {
         List<Annotation> result = new ArrayList<>();
