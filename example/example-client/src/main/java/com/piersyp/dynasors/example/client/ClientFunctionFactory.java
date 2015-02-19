@@ -7,27 +7,28 @@ import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class ClientFunctionFactory {
 
-    private final Client client;
-    private final Function<Class<?>, Function<Method, List<Annotation>>> annotationCollectionFunction;
-    private final Function<List<Annotation>, WebResource> pathConfigurationFunction;
-    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> contentTypeConfigurationFunction;
-    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> acceptsTypeConfigurationFunction;
-    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> cookieConfigurationFunction;
-    private final Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> headerConfigurationFunction;
-    private final Function<List<Annotation>, Function<WebResource.Builder, Function<Object[], Object>>> httpMethodConfigurationFunction;
+    private final WebResource resource;
+    private final BiFunction<Class<?>, Method, List<Annotation>> annotationCollectionFunction;
+    private final BiFunction<List<Annotation>, WebResource, WebResource> pathConfigurationFunction;
+    private final BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> contentTypeConfigurationFunction;
+    private final BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> acceptsTypeConfigurationFunction;
+    private final BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> cookieConfigurationFunction;
+    private final BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> headerConfigurationFunction;
+    private final BiFunction<List<Annotation>, WebResource.Builder, Function<Object[], Object>> httpMethodConfigurationFunction;
 
-    public ClientFunctionFactory(Client client, Function<Class<?>, Function<Method, List<Annotation>>> annotationColletionFunction,
-                                 Function<List<Annotation>, WebResource> pathConfigurationFunction,
-                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> contentTypeConfigurationFunction,
-                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> acceptsTypeConfigurationFunction,
-                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> cookieConfigurationFunction,
-                                 Function<List<Annotation>, Function<WebResource.Builder, WebResource.Builder>> headerConfigurationFunction,
-                                 Function<List<Annotation>, Function<WebResource.Builder, Function<Object[], Object>>> httpMethodConfigurationFunction) {
-        this.client = client;
+    public ClientFunctionFactory(WebResource resource, BiFunction<Class<?>,Method, List<Annotation>> annotationColletionFunction,
+                                 BiFunction<List<Annotation>, WebResource, WebResource> pathConfigurationFunction,
+                                 BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> contentTypeConfigurationFunction,
+                                 BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> acceptsTypeConfigurationFunction,
+                                 BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> cookieConfigurationFunction,
+                                 BiFunction<List<Annotation>, WebResource.Builder, WebResource.Builder> headerConfigurationFunction,
+                                 BiFunction<List<Annotation>, WebResource.Builder, Function<Object[], Object>> httpMethodConfigurationFunction) {
+        this.resource = resource;
         this.annotationCollectionFunction = annotationColletionFunction;
         this.pathConfigurationFunction = pathConfigurationFunction;
         this.contentTypeConfigurationFunction = contentTypeConfigurationFunction;
@@ -39,14 +40,14 @@ public class ClientFunctionFactory {
 
 
     Function<Object[], Object> createFunction(Class<?> resourceClass, Method resourceMethod) {
-        List<Annotation> annotations = annotationCollectionFunction.apply(resourceClass).apply(resourceMethod);
-        WebResource webResource = pathConfigurationFunction.apply(annotations);
+        List<Annotation> annotations = annotationCollectionFunction.apply(resourceClass, resourceMethod);
+        WebResource webResource = pathConfigurationFunction.apply(annotations, resource);
         WebResource.Builder builder = webResource.type(MediaType.APPLICATION_OCTET_STREAM);
-        builder = contentTypeConfigurationFunction.apply(annotations).apply(builder);
-        builder = acceptsTypeConfigurationFunction.apply(annotations).apply(builder);
-        builder = cookieConfigurationFunction.apply(annotations).apply(builder);
-        builder = headerConfigurationFunction.apply(annotations).apply(builder);
-        return httpMethodConfigurationFunction.apply(annotations).apply(builder);
+        builder = contentTypeConfigurationFunction.apply(annotations, builder);
+        builder = acceptsTypeConfigurationFunction.apply(annotations, builder);
+        builder = cookieConfigurationFunction.apply(annotations, builder);
+        builder = headerConfigurationFunction.apply(annotations, builder);
+        return httpMethodConfigurationFunction.apply(annotations, builder);
     }
 
     //reference

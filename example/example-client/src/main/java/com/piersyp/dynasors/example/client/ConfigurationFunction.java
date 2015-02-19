@@ -12,4 +12,13 @@ public class ConfigurationFunction implements BiFunction<List<Annotation>, WebRe
     public WebResource apply(List<Annotation> annotations, WebResource webResource) {
         return null;
     }
+
+//    BiFunction<List<Annotation>, Class<?>, List<Annotation>>
+//
+//    @Override
+//    public WebResource apply(List<Annotation> annotations, WebResource webResource) {
+//        for(Annotation a : annotations){
+//
+//        }
+//    }
 }

@@ -13,7 +13,6 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,7 +34,7 @@ public class AnnotationCollectionFunctionUnitTest {
 
     @Test
     public void givenClassWithPathAnnotation_whenApply_thenAnnotationFound() throws Exception {
-        List<Annotation> annotations = annotationCollectionFunction.apply(Test1.class).apply(Test1.class.getDeclaredMethod("method1"));
+        List<Annotation> annotations = annotationCollectionFunction.apply(Test1.class, Test1.class.getDeclaredMethod("method1"));
 
         assertThat(annotations, contains(instanceOf(Path.class)));
     }
@@ -49,7 +48,7 @@ public class AnnotationCollectionFunctionUnitTest {
 
     @Test
     public void givenClassWithTwoPathAnnotations_whenApply_thenAnnotationsFound() throws Exception {
-        List<Annotation> annotations = annotationCollectionFunction.apply(Test2.class).apply(Test2.class.getDeclaredMethod("method1"));
+        List<Annotation> annotations = annotationCollectionFunction.apply(Test2.class, Test2.class.getDeclaredMethod("method1"));
 
         assertThat(annotations, contains(instanceOf(Path.class), instanceOf(Path.class)));
     }
@@ -63,7 +62,7 @@ public class AnnotationCollectionFunctionUnitTest {
 
     @Test
     public void givenClassWithTwoPathAnnotationsAndAMethodAnnotation_whenApply_thenAnnotationsFound() throws Exception {
-        List<Annotation> annotations = annotationCollectionFunction.apply(Test3.class).apply(Test3.class.getDeclaredMethod("method1"));
+        List<Annotation> annotations = annotationCollectionFunction.apply(Test3.class, Test3.class.getDeclaredMethod("method1"));
 
         assertThat(annotations, contains(instanceOf(Path.class), instanceOf(Path.class), instanceOf(GET.class)));
     }
@@ -78,7 +77,7 @@ public class AnnotationCollectionFunctionUnitTest {
 
     @Test
     public void givenClassWithTwoPathAnnotationsAMethodAnnotationAndAParameterAnnotation_whenApply_thenAnnotationsFound() throws Exception {
-        List<Annotation> annotations = annotationCollectionFunction.apply(Test4.class).apply(Test4.class.getDeclaredMethod("method1", String.class));
+        List<Annotation> annotations = annotationCollectionFunction.apply(Test4.class ,Test4.class.getDeclaredMethod("method1", String.class));
 
         assertThat(annotations, contains(instanceOf(Path.class), instanceOf(Path.class), instanceOf(GET.class), instanceOf(HeaderParam.class)));
     }
