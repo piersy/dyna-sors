@@ -1,10 +1,8 @@
 package com.piersyp.dynasors.example.common;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path(ExampleService.HELLO_WORLD_ENDPOINT)
 public interface ExampleService {
@@ -13,5 +11,10 @@ public interface ExampleService {
 
     @GET
     public String helloWorld();
+
+
+    @POST
+    public String DoSomething(@CookieParam("cookie") List<Runnable> runnableList);
+
 
 }

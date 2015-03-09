@@ -1,9 +1,6 @@
 package com.piersyp.dynasors.example.client;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -52,6 +49,12 @@ public class AnnotationListGenerator {
         void method();
     }
 
+    public static interface CookieParamClass {
+        public static String COOKIE_NAME = "COOKIE_NAME";
+
+        void method(@CookieParam(COOKIE_NAME)String parameter);
+    }
+
     public static final class AnnotatedClassReference{
         private final Class annotationHoldingClass;
 
@@ -67,6 +70,15 @@ public class AnnotationListGenerator {
     public static final AnnotatedClassReference PRODUCES_CLASS = new AnnotatedClassReference(ProducesClass.class);
     public static final AnnotatedClassReference MULTI_PRODUCES_CLASS = new AnnotatedClassReference(MultiProducesClass.class);
     public static final AnnotatedClassReference GET_CLASS = new AnnotatedClassReference(GetClass.class);
+    public static final AnnotatedClassReference COOKIE_PARAM_CLASS = new AnnotatedClassReference(CookieParamClass.class);
+
+    public Annotation getParameterAnnotationInstance(AnnotatedClassReference annotatedClassReference){
+        try {
+            return annotatedClassReference.annotationHoldingClass.getDeclaredMethod("method", String.class).getParameterAnnotations()[0][0];
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public List<Annotation> generateList(AnnotatedClassReference annotatedClassReference, int size) {
         List<Annotation> result = new ArrayList<>();
