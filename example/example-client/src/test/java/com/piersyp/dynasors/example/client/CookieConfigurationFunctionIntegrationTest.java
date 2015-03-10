@@ -20,6 +20,15 @@ import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
+/**
+ * Because the cookie configuration function internally constructs lists from parameter arrays
+ * of the parameter annotations input, we would need to exercise our internal knowledge of how the
+ * cookieConfigurationFunction does that in order to construct the lists to use for mocking the
+ * annotationFilteringFunction, it doesn't seem worth it so instead we go for an integration test.
+ *
+ * On the other hand this does point to maybe an error of design that that functionality should be
+ * extracted out especially as it will be duplicated by the headerConfigurationFunction.
+ */
 public class CookieConfigurationFunctionIntegrationTest {
 
 
@@ -40,8 +49,6 @@ public class CookieConfigurationFunctionIntegrationTest {
     public void setUp() throws Exception {
         parameterAnnotations = new Annotation[1][1];
         parameterAnnotations[0][0] = new AnnotationListGenerator().getParameterAnnotationInstance(AnnotationListGenerator.COOKIE_PARAM_CLASS);
-//        List<Annotation> cookieParamList = new AnnotationListGenerator().getParameterAnnotationInstance(AnnotationListGenerator.COOKIE_PARAM_CLASS);
-//        when(annotationFilteringFunctionMock.apply(annotationListMock, CookieParam.class)).thenReturn(cookieParamList);
         parameters = new Object[1];
         parameters[0] = PARAMETER;
         cookieConfigurationFunction = new CookieConfigurationFunction(new AnnotationFilteringFunction());
