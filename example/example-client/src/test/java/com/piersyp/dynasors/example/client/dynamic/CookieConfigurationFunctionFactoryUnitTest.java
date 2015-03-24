@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CookieConfigurationFunctionFactoryUnitTest {
+public class CookieConfigurationFunctionFactoryUnitTest{
 
     public static final String COOKIE_VALUE = "cookieValue";
     @Mock
