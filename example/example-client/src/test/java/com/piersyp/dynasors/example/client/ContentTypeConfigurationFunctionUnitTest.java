@@ -8,13 +8,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static com.piersyp.dynasors.example.client.AnnotationListGenerator.CONSUMES_CLASS;
-import static com.piersyp.dynasors.example.client.AnnotationListGenerator.MULTI_CONSUMES_CLASS;
+import static com.piersyp.dynasors.example.client.AnnotationGenerator.CONSUMES_CLASS;
+import static com.piersyp.dynasors.example.client.AnnotationGenerator.MULTI_CONSUMES_CLASS;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
@@ -42,16 +41,16 @@ public class ContentTypeConfigurationFunctionUnitTest {
 
     @Test
     public void givenFilteredAnnotationListContainsConsumesInstanceSpecifyingOneType_whenApply_thenExpectedWebResourceReturned() throws Exception {
-        consumesAnnotationList = new AnnotationListGenerator().generateList(CONSUMES_CLASS, 1);
+        consumesAnnotationList = new AnnotationGenerator().generateList(CONSUMES_CLASS, 1);
         when(annotationFilteringFunction.apply(fullAnnotationListMock, Consumes.class)).thenReturn(consumesAnnotationList);
-        when(webResourceBuilderMock1.type(AnnotationListGenerator.ConsumesClass.CONTENT_TYPE_VALUE)).thenReturn(webResourceBuilderMock2);
+        when(webResourceBuilderMock1.type(AnnotationGenerator.ConsumesClass.CONTENT_TYPE_VALUE)).thenReturn(webResourceBuilderMock2);
 
         assertThat(contentTypeConfigurationFunction.apply(fullAnnotationListMock, webResourceBuilderMock1), equalTo(webResourceBuilderMock2));
     }
 
     @Test
     public void givenFilteredAnnotationListContainsConsumesInstanceSpecifyingMoreThanOneType_whenApply_thenExceptionThrown() throws Exception {
-        consumesAnnotationList = new AnnotationListGenerator().generateList(MULTI_CONSUMES_CLASS, 1);
+        consumesAnnotationList = new AnnotationGenerator().generateList(MULTI_CONSUMES_CLASS, 1);
         when(annotationFilteringFunction.apply(fullAnnotationListMock, Consumes.class)).thenReturn(consumesAnnotationList);
 
         try {

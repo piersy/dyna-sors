@@ -14,6 +14,7 @@ public class AnnotationCollectionFunction implements BiFunction<Class<?>, Method
         ArrayList<Annotation> list = new ArrayList<>();
         list.addAll(Arrays.asList(aClass.getAnnotations()));
         list.addAll(Arrays.asList(method.getAnnotations()));
+        //TODO remove this parameter stuff
         for (Annotation[] parameterAnnotations : method.getParameterAnnotations()) {
             list.addAll(Arrays.asList(parameterAnnotations));
         }

@@ -6,7 +6,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnnotationListGenerator {
+public class AnnotationGenerator {
 
     public static interface PathClass {
         public static String PATH_VALUE = "path";
@@ -55,6 +55,12 @@ public class AnnotationListGenerator {
         void method(@CookieParam(COOKIE_NAME)String parameter);
     }
 
+    public static interface HeaderParamClass {
+        public static String HEADER_NAME = "HEADER_NAME";
+
+        void method(@HeaderParam(HEADER_NAME)String parameter);
+    }
+
     public static final class AnnotatedClassReference{
         private final Class annotationHoldingClass;
 
@@ -71,6 +77,7 @@ public class AnnotationListGenerator {
     public static final AnnotatedClassReference MULTI_PRODUCES_CLASS = new AnnotatedClassReference(MultiProducesClass.class);
     public static final AnnotatedClassReference GET_CLASS = new AnnotatedClassReference(GetClass.class);
     public static final AnnotatedClassReference COOKIE_PARAM_CLASS = new AnnotatedClassReference(CookieParamClass.class);
+    public static final AnnotatedClassReference HEADER_PARAM_CLASS = new AnnotatedClassReference(HeaderParamClass.class);
 
     public Annotation getParameterAnnotationInstance(AnnotatedClassReference annotatedClassReference){
         try {
@@ -91,7 +98,6 @@ public class AnnotationListGenerator {
         }
         return result;
     }
-
 
 
 }

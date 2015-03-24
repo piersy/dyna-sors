@@ -12,7 +12,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static com.piersyp.dynasors.example.client.AnnotationListGenerator.*;
+import static com.piersyp.dynasors.example.client.AnnotationGenerator.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
@@ -37,7 +37,7 @@ public class PathConfigurationFunctionUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        pathAnnotationList = new AnnotationListGenerator().generateList(PATH_CLASS, 2);
+        pathAnnotationList = new AnnotationGenerator().generateList(PATH_CLASS, 2);
         when(annotationFilteringFunction.apply(fullAnnotationListMock, Path.class)).thenReturn(pathAnnotationList);
 
         when(webResourceMock1.path(PathClass.PATH_VALUE)).thenReturn(webResourceMock2);

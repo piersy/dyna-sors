@@ -1,4 +1,4 @@
-package com.piersyp.dynasors.example.client;
+package com.piersyp.dynasors.example.client.dynamic;
 
 import com.sun.jersey.api.client.WebResource;
 
@@ -20,43 +20,25 @@ public class CookieConfigurationFunction implements Function<Annotation[][], BiF
         this.annotationFilteringFunction = annotationFilteringFunction;
     }
 
-    static class CookieParameter {
-        private final String cookieName;
-        private final int cookiePosition;
-
-        CookieParameter(String cookieName, int cookiePosition) {
-            this.cookieName = cookieName;
-            this.cookiePosition = cookiePosition;
-        }
-
-        public String getCookieName() {
-            return cookieName;
-        }
-
-        public int getCookiePosition() {
-            return cookiePosition;
-        }
-    }
-
     @Override
     public BiFunction<Object[], WebResource.Builder, WebResource.Builder> apply(Annotation[][] parameterAnnotations) {
-            List<CookieParameter> cookieParameters = new ArrayList<>();
+            List<NamedParameter> namedParameters = new ArrayList<>();
         for (int i = 0; i < parameterAnnotations.length ; i++) {
             List<Annotation> cookieAnnotations = annotationFilteringFunction.apply(Arrays.asList(parameterAnnotations[i]), CookieParam.class);
             if(!cookieAnnotations.isEmpty()){
                 CookieParam cookieAnnotation = CookieParam.class.cast(cookieAnnotations.get(0));
-                cookieParameters.add(new CookieParameter(cookieAnnotation.value(), i));
+                namedParameters.add(new NamedParameter(cookieAnnotation.value(), i));
             }
         }
         return new BiFunction<Object[], WebResource.Builder, WebResource.Builder>() {
             @Override
             public WebResource.Builder apply(Object[] objects, WebResource.Builder builder) {
-                for (CookieParameter cookieParameter : cookieParameters) {
+                for (NamedParameter namedParameter : namedParameters) {
                     /*
                         TODO decide how to decode cookie values to string, could make them implement an interface,
                         or provide a function at  client construction time to decode the cookie, or toString?
                      */
-                    builder = builder.cookie(new Cookie(cookieParameter.getCookieName(), objects[cookieParameter.getCookiePosition()].toString()));
+                    builder = builder.cookie(new Cookie(namedParameter.getName(), objects[namedParameter.getCookiePosition()].toString()));
                 }
                 return builder;
             }

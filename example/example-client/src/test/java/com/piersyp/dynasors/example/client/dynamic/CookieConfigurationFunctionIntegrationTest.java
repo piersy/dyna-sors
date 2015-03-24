@@ -1,5 +1,7 @@
-package com.piersyp.dynasors.example.client;
+package com.piersyp.dynasors.example.client.dynamic;
 
+import com.piersyp.dynasors.example.client.AnnotationFilteringFunction;
+import com.piersyp.dynasors.example.client.AnnotationGenerator;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +11,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.Cookie;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -48,7 +49,7 @@ public class CookieConfigurationFunctionIntegrationTest {
     @Before
     public void setUp() throws Exception {
         parameterAnnotations = new Annotation[1][1];
-        parameterAnnotations[0][0] = new AnnotationListGenerator().getParameterAnnotationInstance(AnnotationListGenerator.COOKIE_PARAM_CLASS);
+        parameterAnnotations[0][0] = new AnnotationGenerator().getParameterAnnotationInstance(AnnotationGenerator.COOKIE_PARAM_CLASS);
         parameters = new Object[1];
         parameters[0] = PARAMETER;
         cookieConfigurationFunction = new CookieConfigurationFunction(new AnnotationFilteringFunction());

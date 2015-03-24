@@ -7,13 +7,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static com.piersyp.dynasors.example.client.AnnotationListGenerator.*;
+import static com.piersyp.dynasors.example.client.AnnotationGenerator.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
@@ -44,7 +43,7 @@ public class AcceptsTypeConfigurationFunctionUnitTest {
 
     @Test
     public void givenFilteredAnnotationListContainsConsumesInstanceSpecifyingOneType_whenApply_thenExpectedWebResourceReturned() throws Exception {
-        producesAnnotationList = new AnnotationListGenerator().generateList(PRODUCES_CLASS, 1);
+        producesAnnotationList = new AnnotationGenerator().generateList(PRODUCES_CLASS, 1);
         when(annotationFilteringFunction.apply(fullAnnotationListMock, Produces.class)).thenReturn(producesAnnotationList);
         when(webResourceBuilderMock1.accept(ProducesClass.CONTENT_TYPE_VALUE)).thenReturn(webResourceBuilderMock2);
 
@@ -53,7 +52,7 @@ public class AcceptsTypeConfigurationFunctionUnitTest {
 
     @Test
     public void givenFilteredAnnotationListContainsConsumesInstanceSpecifyingMoreThanOneType_whenApply_thenExpectedWebResourceReturned() throws Exception {
-        producesAnnotationList = new AnnotationListGenerator().generateList(MULTI_PRODUCES_CLASS, 1);
+        producesAnnotationList = new AnnotationGenerator().generateList(MULTI_PRODUCES_CLASS, 1);
         when(annotationFilteringFunction.apply(fullAnnotationListMock, Produces.class)).thenReturn(producesAnnotationList);
         when(webResourceBuilderMock1.accept(MultiProducesClass.FIRST_CONTENT_TYPE_VALUE)).thenReturn(webResourceBuilderMock2);
         when(webResourceBuilderMock2.accept(MultiProducesClass.SECOND_CONTENT_TYPE_VALUE)).thenReturn(webResourceBuilderMock3);

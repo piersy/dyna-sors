@@ -1,0 +1,18 @@
+so instead of filtering the annotations list and then applying some function based on the kind of filtering we do
+eg filter to find Produces and then apply the produces we could instead iterate annotations and look them up in a map
+and then execute the function associated with that annotation (really the map would need to be a class that uses
+isAssignableFrom) but this seems more flexible, it also removes the repetition of filtering in each sub function.
+
+There would be 2 phases for this
+
+1. Static for annotations applied to the method
+2. Dynamic for annotations applied to the method parameters
+
+In fact we could do this approach just for the dynamic for now, since it has not been done
+and stick with the current for static stuff.
+
+Problem with the above is you cannot map an annotation easily, an annotation by definition has a class of annotation . . .
+Ah fixed the annotationType method returns the actual class allowing for easy mapping of annotation to its static type
+
+In terms of making this more flexible I could define my own builder interface that is manipulated by the configuration
+functions, different implementations could then be supplied to perform the request execution process with an arbitrary client
