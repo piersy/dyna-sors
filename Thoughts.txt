@@ -16,3 +16,10 @@ Ah fixed the annotationType method returns the actual class allowing for easy ma
 
 In terms of making this more flexible I could define my own builder interface that is manipulated by the configuration
 functions, different implementations could then be supplied to perform the request execution process with an arbitrary client
+
+Since jax-rs provides the fromString static function to generate CookieParam annotated types and HeaderParamAnnotated types
+from string, i will need to provide the same but converse,
+Options are use toString - dodge
+implement interface Cookieable provides method toCookieString - safer
+provide a static method to do the above
+provide a configuring method that contains the to string logic
