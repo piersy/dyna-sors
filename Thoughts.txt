@@ -23,3 +23,8 @@ Options are use toString - dodge
 implement interface Cookieable provides method toCookieString - safer
 provide a static method to do the above
 provide a configuring method that contains the to string logic
+
+
+docs for path syntax - https://docs.oracle.com/cd/E19798-01/821-1841/ginpw/
+
+I will need to urlencode path parameters
